@@ -1,0 +1,26 @@
+version: 2
+updates:
+  # 1️⃣ Monitor npm dependencies (you can replace with "pip", "maven", etc. for other projects)
+  - package-ecosystem: "npm"
+    directory: "/" # location of package.json
+    schedule:
+      interval: "weekly" # can be daily, weekly, or monthly
+    open-pull-requests-limit: 5
+    reviewers:
+      - "Sheharyar171"  # Optional: assign yourself or your team for review
+    labels:
+      - "dependencies"
+      - "automated-update"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  # 2️⃣ Optionally monitor GitHub Actions for updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
+    labels:
+      - "ci"
+      - "automation"

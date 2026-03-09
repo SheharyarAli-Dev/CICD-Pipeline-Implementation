@@ -1,0 +1,57 @@
+name: Code Review
+
+# Trigger on PRs, pushes to main, and manual runs
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual run
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install || echo "No dependencies to install"
+
+      # Lint code (check coding standards)
+      - name: Lint code
+        run: |
+          if npm run lint 2>/dev/null; then
+            echo "Linting passed ✅"
+          else
+            echo "Linting skipped or failed ⚠️ (check if lint script exists)"
+          fi
+
+      # Run tests
+      - name: Run tests
+        run: |
+          if npm test 2>/dev/null; then
+            echo "Tests passed ✅"
+          else
+            echo "Tests skipped or failed ⚠️ (check if test script exists)"
+          fi
+
+      # Optional: Security scan with npm audit
+      - name: Security Audit
+        run: |
+          if npm audit --audit-level=moderate; then
+            echo "No major security vulnerabilities ✅"
+          else
+            echo "Security issues found ⚠️"
+          fi

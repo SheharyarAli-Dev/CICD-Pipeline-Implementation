@@ -1,0 +1,56 @@
+name: Custom Workflow - Generate Release Notes
+
+# Trigger on new tags or manually
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Runs when a new version tag is pushed
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  generate-release-notes:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Node.js (or Python, or your preferred environment)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Install dependencies (if your script needs them)
+      - name: Install dependencies
+        run: npm install || echo "No dependencies to install"
+
+      # Run custom script to generate release notes
+      - name: Generate Release Notes
+        run: |
+          echo "Generating release notes..."
+          mkdir -p release-notes
+          # Example: use a JS script or shell commands
+          echo "Release notes for tag $GITHUB_REF" > release-notes/notes.txt
+          echo "Generated notes:"
+          cat release-notes/notes.txt
+
+      # Commit release notes to a separate branch (optional)
+      - name: Commit release notes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b release-notes || git checkout release-notes
+          git add release-notes/notes.txt
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Add release notes for $GITHUB_REF"
+            git push origin release-notes --force
+          fi
+
+      # Optional: Notify team via Slack/Discord
+      - name: Send Notification
+        run: |
+          echo "Notification: Release notes generated for $GITHUB_REF"
