@@ -1,5 +1,4 @@
 # CI/CD Pipeline Implementation — GitHub Actions
-### SCD Assignment 2 | CLO 4
 
 > Automating the full software development lifecycle using GitHub Actions — from code integration and deployment to dependency management, code review, and documentation publishing.
 
