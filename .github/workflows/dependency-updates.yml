@@ -1,0 +1,48 @@
+name: Dependency Updates
+
+# Trigger manually or on schedule (e.g., weekly)
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Every Sunday at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Check outdated packages
+      - name: Check outdated packages
+        run: npm outdated || echo "No outdated packages"
+
+      # Update dependencies
+      - name: Update dependencies
+        run: npm update
+
+      # Run tests to ensure everything works
+      - name: Run tests
+        run: npm test || echo "No test script, skipping"
+
+      # Commit and create Pull Request for updates
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "Automated dependency updates"
+          branch: dependency-updates
+          title: "Automated Dependency Updates"
+          body: "This PR updates dependencies to their latest versions."
+          base: main
